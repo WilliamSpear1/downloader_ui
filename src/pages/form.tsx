@@ -11,35 +11,68 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { fields } from "@hookform/resolvers/ajv/src/__tests__/__fixtures__/data.js";
-
-const formSchema = z.object({
-  url: z.url(),
-  number_of_pages: z.number().gt(0, "Nubmer of Pages Must be greater then 0"),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import axios from "axios";
+import { useState } from "react";
+import { DownloadAlert } from "./alert";
 
 const Form = () => {
-  const form = useForm<FormValues>({
+  const formSchema = z.object({
+    url: z.url(),
+    number_of_pages: z
+      .transform(Number)
+      .pipe(
+        z
+          .number()
+          .int()
+          .positive()
+          .min(1, "Number of Pages Must be greater then 0"),
+      ),
+    parent_directory: z.string(),
+  });
+
+  type Schema = z.infer<typeof formSchema>;
+
+  const form = useForm<Schema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       url: "",
       number_of_pages: 1,
+      parent_directory: "",
     },
   });
 
-  function onSubmit(data: FormValues) {
-    console.log(data);
-  }
+  const server = axios.create({
+    baseURL: "http://localhost:5000",
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const handleOnSubmit = async (data: Schema) => {
+    try {
+      await server.post("/download", data);
+      form.reset();
+      setShowSuccess(true);
+      console.log("Set show success to true");
+      setTimeout(() => setShowSuccess(false), 5000);
+    } catch (error: any) {
+      // If Flask returns a 4xx or 5xx code, it jumps here
+      if (error.response) {
+        console.error("Server returned error code:", error.response.status);
+        console.error("Error message:", error.response.data);
+      } else {
+        console.error("Network or Setup Error:", error.message);
+      }
+    }
+  };
 
   return (
     <>
       <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-zinc-50">
+        {showSuccess && <DownloadAlert />}
         <div className="w-full max-w-2xl min-h-[70vh] bg-white border rounded-3xl p-10 shadow-xl shadow-zinc-200/50">
           <header className="mb-10 text-center">
             <h2 className="text-3xl font-bold tracking-tight text-zinc-900">
@@ -51,17 +84,17 @@ const Form = () => {
           {/* --- Form --- */}
           <form
             id="download-form"
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(handleOnSubmit)}
             className="space-y-10"
           >
             <FieldSet className="pb-4">
-              <FieldLegend>Profile Information</FieldLegend>
+              <FieldLegend>Download Information</FieldLegend>
               <FieldDescription>
-                This information will appear on your public profile.
+                This information will trigger downloading of videos from site.
               </FieldDescription>
 
               <FieldGroup>
-                {/* --- Full Name --- */}
+                {/* --- URL --- */}
                 <Controller
                   name="url"
                   control={form.control}
@@ -89,7 +122,7 @@ const Form = () => {
                   )}
                 />
 
-                {/* --- Bio --- */}
+                {/* --- number of pages --- */}
                 <Controller
                   name="number_of_pages"
                   control={form.control}
@@ -117,6 +150,33 @@ const Form = () => {
                     </Field>
                   )}
                 />
+                {/* --- parent directory --- */}
+                <Controller
+                  name="parent_directory"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel
+                        data-invalid={fieldState.invalid}
+                        htmlFor={field.name}
+                        className="text-sm font-semibold uppercase tracking-wide text-zinc-500"
+                      >
+                        Parent Directory
+                      </FieldLabel>
+                      <Input
+                        {...field}
+                        aria-invalid={fieldState.invalid}
+                        id={field.name}
+                        placeholder="Directory Parent"
+                        className="h-14 text-lg px-4 border-zinc-200 focus:ring-2"
+                        autoCapitalize="off"
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
               </FieldGroup>
             </FieldSet>
 
@@ -133,7 +193,7 @@ const Form = () => {
                 type="submit"
                 className="pt-3"
                 variant={"outline"}
-                form="profile-form"
+                form="download-form"
               >
                 Save
               </Button>
