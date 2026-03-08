@@ -23,6 +23,7 @@ COPY nginx.conf /etc/nginx/templates/default.conf.template
 # Set Correct owership and permissions
 RUN chown -R webuser:webuser /app/www && \
     chmod -R 755 /app/www && \
+    chown -R webuser:webuser /etc/nginx/templates && \
     chown -R webuser:webuser /var/cache/nginx && \
     chown -R webuser:webuser /var/log/nginx && \
     chown -R webuser:webuser /etc/nginx/conf.d && \
