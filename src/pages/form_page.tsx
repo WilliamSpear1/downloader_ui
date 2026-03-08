@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import axios from "axios";
 import { useState } from "react";
-import { DownloadAlert } from "./alert";
+import { DownloadAlert } from "./alert_page";
 
 const Form = () => {
   const formSchema = z.object({
@@ -48,7 +48,6 @@ const Form = () => {
     baseURL: "http://localhost:5000",
   });
 
-  const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const handleOnSubmit = async (data: Schema) => {

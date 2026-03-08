@@ -1,0 +1,9 @@
+services:
+  downloader_ui:
+    build:
+      context: .
+      dockerfile: ./dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - "8086:8086"
