@@ -1,9 +1,52 @@
 services:
+  downloader:
+    image: registry.spearmanwm.dev/downloader:prod
+    container_name: downloader
+    restart: unless-stopped
+    ports:
+      - 5000:5000
+    environment:
+      - PUID=3000
+      - PGID=3000
+      - TZ=America/New_York
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+      - HITS=${HITS}
+      - FREE=${FREE}
+      - MANY=${MANY}
+      - URL_PROCESSOR=${URL_PROCESSOR}
+      - CHECK_URL=${CHECK_URL}
+      - UPLOAD_URL=${UPLOAD_URL}
+      - ENVIRONMENT=${ENVIRONMENT}
+    networks:
+      - app-net
   downloader_ui:
+    image: registry.spearmanwm.dev/downloader_ui:prod
+    container_name: downloader_ui
     build:
       context: .
       dockerfile: ./dockerfile
+    ports:
+      - 8086:8086
     environment:
       NODE_ENV: production
-    ports:
-      - "8086:8086"
+      API_URL: ${API_URL}
+    depends_on:
+      - downloader
+  downloader-celery-worker:
+    image: registry.spearmanwm.dev/downloader:prod
+    container_name: celery_worker_downloader
+    volumes:
+      - type: bind
+        source: /mnt/Storage/Data/Jellyfin/Media
+        target: /app/videos
+    command: celery -A tasks worker -Q downloader_queue --events -l info
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+      - ENVIRONMENT=${ENVIRONMENT}
+    depends_on:
+      - downloader
+networks:
+  app-net:
+    external: true
