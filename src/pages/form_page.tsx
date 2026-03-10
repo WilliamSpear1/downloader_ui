@@ -14,9 +14,9 @@ import { Input } from "@/components/ui/input";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import axios from "axios";
 import { useState } from "react";
 import { DownloadAlert } from "./alert_page";
+import server from "@/api/axiosInstance";
 
 const Form = () => {
   const formSchema = z.object({
@@ -42,10 +42,6 @@ const Form = () => {
       number_of_pages: 1,
       parent_directory: "",
     },
-  });
-
-  const server = axios.create({
-    baseURL: import.meta.env.API_URL,
   });
 
   const [showSuccess, setShowSuccess] = useState(false);
