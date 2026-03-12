@@ -19,8 +19,6 @@ RUN mkdir -p /app/www
 COPY --from=build_stage /app/dist /app/www
 
 COPY nginx.conf /etc/nginx/templates/default.conf.template
-RUN dos2unix /etc/nginx/templates/default.conf.template
-RUN dos2unix /etc/nginx/conf.d/default.conf
 
 COPY /src/env/env.sh /docker-entrypoint.d/env.sh
 
