@@ -1,7 +1,13 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle2Icon } from "lucide-react";
 
-export function DownloadAlert() {
+interface Props {
+  showSuccess: boolean;
+}
+
+export function DownloadAlert({ showSuccess }: Props) {
+  if (!showSuccess) return null;
+
   return (
     <div className="flex items-center max-w-sm flex-col justify-center p-6 bg-zinc-50">
       <Alert className="shadow-xl border border-green-400">

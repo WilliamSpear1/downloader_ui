@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -11,30 +9,17 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DownloadAlert } from "./alert_page";
+import axios from "axios";
+import { cn } from "@/lib/utils";
+import { SpinnerCustom } from "@/components/ui/spinner";
+import { formSchema, type Schema } from "@/schemas/formSchema";
 import server from "@/api/axiosInstance";
 
 const Form = () => {
-  const formSchema = z.object({
-    url: z.url(),
-    number_of_pages: z
-      .transform(Number)
-      .pipe(
-        z
-          .number()
-          .int()
-          .positive()
-          .min(1, "Number of Pages Must be greater then 0"),
-      ),
-    parent_directory: z.string(),
-  });
-
-  type Schema = z.infer<typeof formSchema>;
-
   const form = useForm<Schema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,29 +30,48 @@ const Form = () => {
   });
 
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleOnSubmit = async (data: Schema) => {
+    setIsLoading(true);
+
     try {
       await server.post("/download", data);
+      console.log(data);
+      console.log(isLoading);
       form.reset();
       setShowSuccess(true);
-      console.log("Set show success to true");
-      setTimeout(() => setShowSuccess(false), 5000);
-    } catch (error: any) {
-      // If Flask returns a 4xx or 5xx code, it jumps here
-      if (error.response) {
-        console.error("Server returned error code:", error.response.status);
-        console.error("Error message:", error.response.data);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        // If Flask returns a 4xx or 5xx code, it jumps here
+        console.error("Server returned error code:", error.status);
+        console.error("Error message:", error.response);
       } else {
-        console.error("Network or Setup Error:", error.message);
+        console.error("Network or Setup Error:", error);
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+  }, []);
+
+  useEffect(() => {
+    if (!showSuccess) return;
+
+    const timer = setTimeout(() => setShowSuccess(false), 5000);
+    return () => clearTimeout(timer);
+  }, [showSuccess]);
+
   return (
     <>
+      {<SpinnerCustom isLoading={isLoading} />}
       <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-zinc-50">
-        {showSuccess && <DownloadAlert />}
+        {<DownloadAlert showSuccess={showSuccess} />}
         <div className="w-full max-w-2xl min-h-[70vh] bg-white border rounded-3xl p-10 shadow-xl shadow-zinc-200/50">
           <header className="mb-10 text-center">
             <h2 className="text-3xl font-bold tracking-tight text-zinc-900">
@@ -145,6 +149,7 @@ const Form = () => {
                     </Field>
                   )}
                 />
+
                 {/* --- parent directory --- */}
                 <Controller
                   name="parent_directory"
@@ -174,11 +179,11 @@ const Form = () => {
                 />
               </FieldGroup>
             </FieldSet>
-
+            {/* --- Buttons --- */}
             <Field>
               <Button
                 type="button"
-                className="pt-3"
+                className="pt-3 hover:scale-105 bg-white/50"
                 variant={"outline"}
                 onClick={() => form.reset()}
               >
@@ -186,9 +191,14 @@ const Form = () => {
               </Button>
               <Button
                 type="submit"
-                className="pt-3"
+                className={cn(
+                  "pt-3",
+                  isLoading && "opacity-50 cursor-not-allowed",
+                  !isLoading && "hover:scale-105",
+                )}
                 variant={"outline"}
                 form="download-form"
+                disabled={isLoading}
               >
                 Save
               </Button>

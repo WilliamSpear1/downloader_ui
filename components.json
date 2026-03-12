@@ -18,7 +18,9 @@
     "ui": "@/components/ui",
     "lib": "@/lib",
     "hooks": "@/hooks",
-    "pages": "@/pages"
+    "pages": "@/pages",
+    "types": "@/types",
+    "schemas": "@/schema"
   },
   "registries": {}
 }
