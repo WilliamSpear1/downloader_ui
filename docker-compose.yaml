@@ -3,9 +3,10 @@ services:
     build:
       context: .
       dockerfile: ./dockerfile
-      args:
-        - VITE_API_URL=${VITE_API_URL}
     environment:
       NODE_ENV: production
+      ASSET_DIR: /app/www
+      APP_PREFIX: PREFIX_
+      PREFIX_API_URL: "http://localhost:5000"
     ports:
       - "8086:8086"

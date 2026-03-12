@@ -1,8 +1,5 @@
 FROM node:lts-alpine3.22 AS build_stage
 
-ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
-
 WORKDIR /app
 
 COPY package*.json ./
@@ -22,6 +19,10 @@ RUN mkdir -p /app/www
 COPY --from=build_stage /app/dist /app/www
 
 COPY nginx.conf /etc/nginx/templates/default.conf.template
+
+COPY /src/env/env.sh /docker-entrypoint.d/env.sh
+RUN dos2unix /docker-entrypoint.d/env.sh
+RUN chmod +x /docker-entrypoint.d/env.sh
 
 # Set Correct owership and permissions
 RUN chown -R webuser:webuser /app/www && \
@@ -46,4 +47,5 @@ ENV PORT=8086
 #Switch to non root-user
 USER webuser
 
+ENTRYPOINT [ "/docker-entrypoint.sh" ]
 CMD ["nginx", "-g", "daemon off;"]
