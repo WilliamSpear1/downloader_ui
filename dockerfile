@@ -45,7 +45,7 @@ ENV NGINX_ENVSUBST_TEMPLATE_DIR=/etc/nginx/templates
 ENV NGINX_ENVSUBST_TEMPLATE_SUFFIX=.template
 ENV NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d
 ENV PORT=8086
-
+ENV API_URL=${PREFIX_API_URL}
 #Switch to non root-user
 USER webuser
 
