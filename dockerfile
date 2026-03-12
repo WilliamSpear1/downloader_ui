@@ -19,6 +19,8 @@ RUN mkdir -p /app/www
 COPY --from=build_stage /app/dist /app/www
 
 COPY nginx.conf /etc/nginx/templates/default.conf.template
+RUN dos2unix /etc/nginx/templates/default.conf.template
+RUN dos2unix /etc/nginx/conf.d/default.conf
 
 COPY /src/env/env.sh /docker-entrypoint.d/env.sh
 
@@ -44,8 +46,7 @@ EXPOSE 8086
 ENV NGINX_ENVSUBST_TEMPLATE_DIR=/etc/nginx/templates
 ENV NGINX_ENVSUBST_TEMPLATE_SUFFIX=.template
 ENV NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d
-ENV PORT=8086
-ENV API_URL=${PREFIX_API_URL}
+
 #Switch to non root-user
 USER webuser
 
