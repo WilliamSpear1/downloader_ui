@@ -21,8 +21,6 @@ COPY --from=build_stage /app/dist /app/www
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 COPY /src/env/env.sh /docker-entrypoint.d/env.sh
-RUN dos2unix /docker-entrypoint.d/env.sh
-RUN chmod +x /docker-entrypoint.d/env.sh
 
 # Set Correct owership and permissions
 RUN chown -R webuser:webuser /app/www && \
@@ -33,6 +31,10 @@ RUN chown -R webuser:webuser /app/www && \
     chown -R webuser:webuser /var/log/nginx && \
     chown -R webuser:webuser /etc/nginx/conf.d && \
     touch /var/run/nginx.pid && \
+    chown -R webuser:webuser /docker-entrypoint.d && \
+    chmod -R 755 /docker-entrypoint.d && \
+    dos2unix /docker-entrypoint.d/env.sh && \
+    chmod +x /docker-entrypoint.d/env.sh && \
     chown -R webuser:webuser /var/run/nginx.pid && \
     chmod -R 777 /etc/nginx/conf.d
 
