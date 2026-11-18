@@ -1,10 +1,12 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle2Icon } from "lucide-react";
 
+/** Props for the download submission confirmation. */
 interface Props {
   showSuccess: boolean;
 }
 
+/** Displays a confirmation alert after a download request succeeds. */
 export function DownloadAlert({ showSuccess }: Props) {
   if (!showSuccess) return null;
 

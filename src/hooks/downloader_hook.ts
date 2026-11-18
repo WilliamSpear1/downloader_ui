@@ -4,10 +4,19 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 
+/**
+ * Manages download submission, loading state, and temporary success feedback.
+ * @param form The form controller to reset after a successful submission.
+ * @returns Submission state and the form submit handler.
+ */
 const useDownloaderForm = (form: UseFormReturn<Schema>) => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  /**
+   * Posts validated form data and updates the form and request states.
+   * @param data Validated download form values.
+   */
   const handleOnSubmit = async (data: Schema) => {
     setIsLoading(true);
 

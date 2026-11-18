@@ -17,6 +17,7 @@ import { SpinnerCustom } from "@/components/ui/spinner";
 import { formSchema, type Schema } from "@/schemas/formSchema";
 import useDownloaderForm from "@/hooks/downloader_hook";
 
+/** Renders the download form and its loading and success states. */
 const Form = () => {
   const form: UseFormReturn<Schema> = useForm<Schema>({
     resolver: zodResolver(formSchema),

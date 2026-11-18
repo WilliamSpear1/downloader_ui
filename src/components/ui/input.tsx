@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/** Renders a styled input while forwarding native input props. */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <input
