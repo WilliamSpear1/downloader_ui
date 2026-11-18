@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 
+/** Provides a semantic fieldset for a related set of form controls. */
 function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
   return (
     <fieldset
@@ -19,6 +20,7 @@ function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
   )
 }
 
+/** Renders a fieldset legend with heading or label styling. */
 function FieldLegend({
   className,
   variant = "legend",
@@ -39,6 +41,7 @@ function FieldLegend({
   )
 }
 
+/** Groups fields and provides layout context for responsive field styling. */
 function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -76,6 +79,7 @@ const fieldVariants = cva(
   }
 )
 
+/** Renders a form field group with the selected layout orientation. */
 function Field({
   className,
   orientation = "vertical",
@@ -92,6 +96,7 @@ function Field({
   )
 }
 
+/** Groups supporting content within a field. */
 function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -105,6 +110,7 @@ function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/** Renders the label associated with a form field. */
 function FieldLabel({
   className,
   ...props
@@ -123,6 +129,7 @@ function FieldLabel({
   )
 }
 
+/** Renders a non-interactive title within a field. */
 function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -136,6 +143,7 @@ function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/** Renders explanatory text associated with a field. */
 function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
   return (
     <p
@@ -151,6 +159,7 @@ function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
   )
 }
 
+/** Separates field content, optionally displaying a text label. */
 function FieldSeparator({
   children,
   className,
@@ -181,6 +190,7 @@ function FieldSeparator({
   )
 }
 
+/** Displays explicit child content or deduplicated validation messages. */
 function FieldError({
   className,
   children,
